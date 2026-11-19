@@ -15,6 +15,8 @@ await LiveActivity.end(id, { step: 3, statusText: 'Delivered. Enjoy!', etaTimest
 
 ## How it works
 
+![Architecture: one TypeScript API driving the iOS island and Android Live Updates](docs/architecture.gif)
+
 ```
 React (App.tsx)
    │  useOrderLiveActivity()  ── src/liveActivity/
