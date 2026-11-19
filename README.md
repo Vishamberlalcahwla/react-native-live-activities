@@ -38,6 +38,7 @@ The app never draws the Dynamic Island or the notification itself. It sends **da
 | `src/liveActivity/index.ts` | Typed, cross-platform JS API |
 | `src/liveActivity/useOrderLiveActivity.ts` | React hook tying the activity to a screen's lifecycle |
 | `modules/live-activity/` | iOS native module (local CocoaPod): Swift + ActivityKit |
+| `modules/live-activity-shared/` | `OrderActivityAttributes`, the one data model shared by the app and the widget (local CocoaPod, no React dependency) |
 | `ios/LiveActivityWidget/` | SwiftUI sources for the Widget Extension (Dynamic Island + Lock Screen) |
 | `android/app/src/main/java/com/liveactivitiesdemo/liveactivity/` | Android native module + notification builder |
 
@@ -61,13 +62,14 @@ Xcode targets can't be safely generated from the command line, so add this one b
 1. Open `ios/LiveActivitiesDemo.xcworkspace` in Xcode.
 2. **File → New → Target → Widget Extension**. Name it `OrderTrackerWidget`, tick **Include Live Activity**, untick **Include Configuration App Intent**. When asked, **Activate** the scheme.
 3. In the new `OrderTrackerWidget` group, **delete the generated `.swift` files** (Move to Trash). Keep `Info.plist` and `Assets.xcassets`.
-4. Drag the 3 files from `ios/LiveActivityWidget/` into the `OrderTrackerWidget` group. Untick "Copy items if needed", and set **Target Membership** to `OrderTrackerWidget` only.
+4. Drag the 2 files from `ios/LiveActivityWidget/` into the `OrderTrackerWidget` group. Untick "Copy items if needed", and set **Target Membership** to `OrderTrackerWidget` only.
 5. Select the `OrderTrackerWidget` target → **General** → set **Minimum Deployments** to **iOS 16.2**.
-6. Run the `LiveActivitiesDemo` scheme on a device or Pro simulator.
+6. Run `cd ios && pod install` again. The Podfile detects the new target and links the shared `OrderActivityShared` pod into it.
+7. Run the `LiveActivitiesDemo` scheme on a device or Pro simulator.
 
 `NSSupportsLiveActivities` is already enabled in the app's `Info.plist`.
 
-> `OrderActivityAttributes.swift` exists twice: in the native module (app) and in the widget. ActivityKit matches them by type name, so **keep both copies identical**.
+> `OrderActivityAttributes` lives in one place, the `OrderActivityShared` pod, which both the app and the widget link. There's no copy to keep in sync.
 
 ### Android
 
@@ -86,7 +88,7 @@ Accept the notification permission when you start an order. On Android 16+, if t
 ## Gotchas
 
 - **Fast Refresh doesn't reload native code.** Rebuild after changing Swift or Kotlin.
-- **Activity starts but nothing shows (iOS):** check that the widget target exists and is embedded in the app, that Live Activities are enabled in the app's Settings, and that both copies of `OrderActivityAttributes` match.
+- **Activity starts but nothing shows (iOS):** check that the widget target exists and is embedded in the app, that Live Activities are enabled in the app's Settings, and that you re-ran `pod install` after creating the widget target.
 - **Background updates:** JavaScript only runs while the app is active. For server-driven updates, use ActivityKit push tokens (`pushType: .token`) on iOS and FCM data messages on Android.
 - **Limits:** iOS ends a Live Activity after about 8 hours (it can stay on the Lock Screen for up to 4 more) and caps its data at 4 KB. Android Live Updates must be ongoing, uncolorized and use an allowed style. Don't repost one the user dismissed.
 - **Icons:** the Android notification uses a system placeholder icon. Replace it with your app's monochrome icon.

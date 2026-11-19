@@ -1,5 +1,6 @@
 import ActivityKit
 import Foundation
+import OrderActivityShared
 import React
 
 /// React Native native module that starts, updates and ends

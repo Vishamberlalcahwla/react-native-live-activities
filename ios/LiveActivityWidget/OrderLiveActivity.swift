@@ -1,4 +1,5 @@
 import ActivityKit
+import OrderActivityShared
 import SwiftUI
 import WidgetKit
 

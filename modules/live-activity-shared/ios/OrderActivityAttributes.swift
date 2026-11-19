@@ -3,11 +3,9 @@ import Foundation
 
 /// Data model for the order-tracking Live Activity.
 ///
-/// IMPORTANT: this file exists twice, once for the app
-/// (`modules/live-activity/ios/`) and once for the widget extension
-/// (`ios/LiveActivityWidget/`).
-/// ActivityKit matches the app and the widget extension by type name,
-/// so keep both copies in sync (same name, same fields, same types).
+/// Single source of truth, shipped as the `OrderActivityShared` pod and
+/// linked into BOTH the app (via LiveActivityModule) and the widget extension.
+/// No React dependency, so it is safe to link into an app extension.
 @available(iOS 16.1, *)
 public struct OrderActivityAttributes: ActivityAttributes {
   public struct ContentState: Codable, Hashable {

@@ -2,8 +2,10 @@
  * Live Activities demo: an order tracker that shows up on the
  * iOS Dynamic Island / Lock Screen and as an Android Live Update.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
+  Alert,
+  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -40,7 +42,16 @@ function stateFor(step: number): OrderState {
 function OrderScreen() {
   const order = useMemo(() => ORDER, []);
   const [step, setStep] = useState(0);
-  const { start, update, finish, isActive, error } = useOrderLiveActivity(order);
+  const { start, update, finish, isActive, error, liveUpdatesEnabled } =
+    useOrderLiveActivity(order);
+
+  // Tapping the Dynamic Island / notification opens liveactivitiesdemo://order/<number>
+  useEffect(() => {
+    const sub = Linking.addEventListener('url', ({ url }) => {
+      Alert.alert('Opened from live activity', url);
+    });
+    return () => sub.remove();
+  }, []);
 
   const onStart = async () => {
     setStep(0);
@@ -98,9 +109,9 @@ function OrderScreen() {
         </>
       )}
 
-      {Platform.OS === 'android' && (
+      {Platform.OS === 'android' && liveUpdatesEnabled === false && (
         <Button
-          label="Live Update settings (Android 16+)"
+          label="Turn on Live Updates (Android 16+)"
           onPress={() => LiveActivity.openLiveUpdateSettings()}
         />
       )}

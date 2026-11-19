@@ -14,6 +14,17 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
+# The widget extension target is created once in Xcode (see README).
+# Until it exists, skip it so `pod install` still works.
+widget_target_exists = File.read(File.join(__dir__, 'LiveActivitiesDemo.xcodeproj/project.pbxproj')).include?('OrderTrackerWidget')
+
+if widget_target_exists
+  target 'OrderTrackerWidget' do
+    # Same OrderActivityAttributes type as the app: one source file, no copies
+    pod 'OrderActivityShared', :path => '../modules/live-activity-shared'
+  end
+end
+
 target 'LiveActivitiesDemo' do
   config = use_native_modules!
 
@@ -24,6 +35,7 @@ target 'LiveActivitiesDemo' do
   )
 
   # Local native module: React Native <-> ActivityKit bridge
+  pod 'OrderActivityShared', :path => '../modules/live-activity-shared'
   pod 'LiveActivityModule', :path => '../modules/live-activity'
 
   post_install do |installer|

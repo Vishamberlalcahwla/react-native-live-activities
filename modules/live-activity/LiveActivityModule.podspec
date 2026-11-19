@@ -14,6 +14,8 @@ Pod::Spec.new do |s|
   # Weak-linked so the app still launches on iOS versions without ActivityKit
   s.weak_frameworks = "ActivityKit"
 
+  s.dependency "OrderActivityShared"
+
   # Adds React-Core and the New Architecture dependencies
   install_modules_dependencies(s)
 end

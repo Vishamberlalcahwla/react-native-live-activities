@@ -37,22 +37,43 @@ type NativeLiveActivity = {
 
 const Native: NativeLiveActivity | undefined = NativeModules.LiveActivityModule;
 
+export type PrepareResult = {
+  /** Can a live activity / ongoing notification be shown at all? */
+  canShow: boolean;
+  /** Android 16+: is the user allowing promoted Live Updates? (null on iOS / older Android) */
+  liveUpdatesEnabled: boolean | null;
+};
+
 /**
  * One API for both platforms:
  * - iOS: Live Activity on the Dynamic Island + Lock Screen (ActivityKit)
  * - Android: ongoing notification, promoted to a Live Update on Android 16+
  */
 export const LiveActivity = {
-  /** Asks for notification permission where needed and reports whether live updates can be shown. */
-  async prepare(): Promise<boolean> {
-    if (!Native) return false;
+  /**
+   * iOS: checks the Live Activities switch (iOS 16.2+).
+   * Android: requests POST_NOTIFICATIONS (API 33+), then reports whether
+   * promoted Live Updates are allowed (API 36+).
+   */
+  async prepare(): Promise<PrepareResult> {
+    if (!Native) return { canShow: false, liveUpdatesEnabled: null };
     if (Platform.OS === 'android' && Number(Platform.Version) >= 33) {
       const result = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
       );
-      if (result !== PermissionsAndroid.RESULTS.GRANTED) return false;
+      if (result !== PermissionsAndroid.RESULTS.GRANTED) {
+        return { canShow: false, liveUpdatesEnabled: null };
+      }
     }
-    return Native.isSupported();
+    const canShow = await Native.isSupported();
+    if (Platform.OS === 'android' && Native.getAndroidCapabilities) {
+      const caps = await Native.getAndroidCapabilities();
+      return {
+        canShow,
+        liveUpdatesEnabled: caps.liveUpdatesSupported ? caps.liveUpdatesEnabled : null,
+      };
+    }
+    return { canShow, liveUpdatesEnabled: null };
   },
 
   async start(order: OrderInfo, state: OrderState): Promise<string | null> {

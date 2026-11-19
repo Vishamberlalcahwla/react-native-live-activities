@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
@@ -122,7 +123,12 @@ class LiveActivityModule(private val reactContext: ReactApplicationContext) :
   @Suppress("MissingPermission") // checked via areNotificationsEnabled() before start
   private fun post(id: Int, info: OrderInfo, state: OrderState, isFinal: Boolean) {
     if (!notifications.areNotificationsEnabled()) return
-    notifications.notify(id, OrderNotification.build(reactContext, info, state, isFinal))
+    val notification = OrderNotification.build(reactContext, info, state, isFinal)
+    if (Build.VERSION.SDK_INT >= 36 && !isFinal && !notification.hasPromotableCharacteristics()) {
+      // Shown, but as a normal notification. Usually a style or flag requirement is not met.
+      Log.w(NAME, "Notification $id does not meet Live Update requirements")
+    }
+    notifications.notify(id, notification)
   }
 
   private fun ReadableMap.str(key: String) = if (hasKey(key)) getString(key) ?: "" else ""
