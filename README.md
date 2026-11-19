@@ -2,7 +2,7 @@
 
 A React Native sample that shows a **live order tracker** outside the app:
 
-- **iOS:** a Live Activity on the **Dynamic Island** and **Lock Screen**, built with ActivityKit, WidgetKit and SwiftUI.
+- **iOS:** a Live Activity on the **Dynamic Island** (the pill around the front camera) and the **Lock Screen**, built with ActivityKit, WidgetKit and SwiftUI.
 - **Android:** an ongoing notification that becomes a promoted **Live Update** on Android 16+ (`Notification.ProgressStyle` + status-bar chip). Older Android versions get a regular progress notification.
 
 The same JavaScript API drives both platforms:
@@ -28,7 +28,7 @@ NativeModules.LiveActivityModule
                 OrderNotification.kt (ProgressStyle Live Update / progress notification)
 ```
 
-The app never draws the Dynamic Island or the notification itself. It sends **data**, and the system renders the UI. Countdowns use the ETA timestamp, so the OS animates them without per-second updates from JavaScript.
+The app never draws the island or the notification itself. It sends **data**, and the system renders the UI. Countdowns use the ETA timestamp, so the OS animates them without per-second updates from JavaScript.
 
 ## Project layout
 
@@ -39,14 +39,14 @@ The app never draws the Dynamic Island or the notification itself. It sends **da
 | `src/liveActivity/useOrderLiveActivity.ts` | React hook tying the activity to a screen's lifecycle |
 | `modules/live-activity/` | iOS native module (local CocoaPod): Swift + ActivityKit |
 | `modules/live-activity-shared/` | `OrderActivityAttributes`, the one data model shared by the app and the widget (local CocoaPod, no React dependency) |
-| `ios/LiveActivityWidget/` | SwiftUI sources for the Widget Extension (Dynamic Island + Lock Screen) |
+| `ios/LiveActivityWidget/` | SwiftUI sources for the Widget Extension (island + Lock Screen) |
 | `android/app/src/main/java/com/liveactivitiesdemo/liveactivity/` | Android native module + notification builder |
 
 ## Requirements
 
 - Node 20+, Xcode 16+, CocoaPods, Android Studio with SDK 36 (Android 16)
 - iOS 16.2+ for Live Activities (the app itself runs on lower versions; the feature reports as unsupported)
-- An iPhone with a Dynamic Island, or an iPhone 15/16/17 **Pro** simulator, to see the island
+- An iPhone with the camera pill, or a **Pro** simulator, to see the island view
 
 ## Setup
 
@@ -82,7 +82,7 @@ Accept the notification permission when you start an order. On Android 16+, if t
 ## Try it
 
 1. Tap **Start order**.
-2. **iOS:** go to the Home Screen (Dynamic Island) or lock the phone (Lock Screen). Long-press the island for the expanded view. **Android:** pull down the shade or lock the phone.
+2. **iOS:** go to the Home Screen (the pill at the top) or lock the phone (Lock Screen). Long-press the island for the expanded view. **Android:** pull down the shade or lock the phone.
 3. Tap **Next step** to move through *confirmed → preparing → on the way → delivered*.
 
 ## Gotchas
