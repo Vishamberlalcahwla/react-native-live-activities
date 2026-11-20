@@ -5,6 +5,12 @@ A React Native sample that shows a **live order tracker** outside the app:
 - **iOS:** a Live Activity on the **Dynamic Island** (the pill around the front camera) and the **Lock Screen**, built with ActivityKit, WidgetKit and SwiftUI.
 - **Android:** an ongoing notification that becomes a promoted **Live Update** on Android 16+ (`Notification.ProgressStyle` + status-bar chip). Older Android versions get a regular progress notification.
 
+| iOS | Android 16 |
+| --- | --- |
+| ![iOS Live Activity: compact, expanded and Lock Screen](docs/ios-live-activity.gif) | ![Android Live Update: status-bar chip, shade and lock screen](docs/android-live-update.gif) |
+
+*Illustrative mockups of the sample's layouts.*
+
 The same JavaScript API drives both platforms:
 
 ```ts
